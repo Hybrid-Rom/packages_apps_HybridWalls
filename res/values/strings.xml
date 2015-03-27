@@ -18,4 +18,5 @@
     <string name="app_name">Hybrid Walls</string>
     <string name="set_wallpaper">Set wallpaper</string>
     <string name="no_wallpaper">No wallpaper</string>
+    <string name="auto_scale_crop">Automatic Scale/Crop</string>
 </resources>

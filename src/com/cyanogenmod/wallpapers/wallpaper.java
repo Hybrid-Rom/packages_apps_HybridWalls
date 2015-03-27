@@ -38,10 +38,13 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class wallpaper extends Activity implements AdapterView.OnItemSelectedListener,
@@ -63,6 +66,8 @@ public class wallpaper extends Activity implements AdapterView.OnItemSelectedLis
     private ArrayList<Integer> mImages;
     private WallpaperLoader mLoader;
     private static SharedPreferences mPrefs;
+
+    private CheckBox scaleCrop;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -91,6 +96,22 @@ public class wallpaper extends Activity implements AdapterView.OnItemSelectedLis
         mImageView = (ImageView) findViewById(R.id.wallpaper);
         mInfoView = (TextView) findViewById(R.id.info);
         mPrefs = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+
+        addListenerOnScaleCrop();
+    }
+
+    public void addListenerOnScaleCrop() {
+        scaleCrop = (CheckBox) findViewById(R.id.scalecrop);
+	    scaleCrop.setOnClickListener(new OnClickListener() {
+
+	        @Override
+	        public void onClick(View v) {
+		        if (((CheckBox) v).isChecked()) {
+                    //dummy
+		        }
+	        }
+
+	    });
     }
 
     private void findWallpapers() {
@@ -285,7 +306,20 @@ public class wallpaper extends Activity implements AdapterView.OnItemSelectedLis
         }
 
         mIsWallpaperSet = true;
-        cropImageAndSetWallpaper(mImages.get(position));
+
+        if(scaleCrop.isChecked() == true) {
+            cropImageAndSetWallpaper(mImages.get(position));
+        }
+        else {
+            try {
+                InputStream stream = getResources().openRawResource(mImages.get(position));
+                setWallpaper(stream);
+                setResult(RESULT_OK);
+                finish();
+            } catch (IOException e) {
+                Log.e("Paperless System", "Failed to set wallpaper: " + e);
+            }
+        }
     }
 
     public void onNothingSelected(AdapterView parent) {
